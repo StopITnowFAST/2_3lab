@@ -1,6 +1,6 @@
 import json
 
-my_list = ['foo', 'bar']
+my_list = ["foo", "bar"]
 
 # вариант 1
 contents = json.dumps(my_list)

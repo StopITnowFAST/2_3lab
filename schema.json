@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Students",
+  "description": "data Students",
+  "type": "array",
+  "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "student's name",
+            "type": "string"
+          },
+          "group": {
+            "description": "student's group",
+            "type": "string"
+          },
+          "marks": {
+            "description": "student's marks",
+            "type": "array",
+            "items": {
+                "enum": [1, 2, 3, 4, 5]
+            },
+            "maxItems": 5,
+            "minItems": 5
+          }
+      }
+  },
+  "required": ["items"]
+}

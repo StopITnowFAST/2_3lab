@@ -3,6 +3,7 @@
 
 import sys
 import json
+from pydantic import BaseModel, ValidationError, validator
 
 # Использовать словарь, содержащий следующие ключи: фамилия и инициалы; номер
 # группы; успеваемость (список из пяти элементов). Написать программу, выполняющую
@@ -13,7 +14,22 @@ import json
 # 4. если таких студентов нет, вывести соответствующее сообщение.
 
 
-def add(mas, staff):
+class Student(BaseModel):
+    name: str
+    group: str
+    marks: list
+
+    @validator('marks')
+    def amount_of_marks_should_be_5(cls, v: int) -> int:
+        if len(v) != 5:
+            raise ValueError("marks != 5")
+        for i in v:
+            if i > 5 or i < 1:
+                raise ValueError("wrong marks")
+        return v
+
+
+def add(staff):
     """
     Ввести данные студента в словарь
     """
@@ -105,14 +121,23 @@ def load_students(file_name):
     Загрузить всех работников из файла JSON
     """
     with open(file_name, "r", encoding="utf-8") as fin:
-        return json.load(fin)
+        loadfile = json.loads(fin.read())
+        try:
+            for i in loadfile:
+                Student.parse_raw(str(i).replace("'", '"'))
+            print("success")
+            return loadfile
+
+        except ValidationError as err:
+            print("error")
+            print(err)
+            exit()
 
 
 def main():
     """
     Главная функция программы
     """
-    n = 5
     students = []
 
     while True:
@@ -122,7 +147,7 @@ def main():
             break
 
         elif command == "add":
-            add(n, students)
+            add(students)
             if len(students) > 1:
                 students.sort(key=lambda item: item.get("name", ""))
 
@@ -144,7 +169,6 @@ def main():
         elif command.startswith("load "):
             parts = command.split(maxsplit=1)
             file_name = parts[1]
-
             students = load_students(file_name)
 
 
